@@ -29,6 +29,7 @@ body {
 
 .display-content p {
   font-size: 2em;
+  word-wrap: break-word;
 }
 
 .calculator {
