@@ -45,8 +45,12 @@ const updateDisplay = () => {
 
 // 7. buat fungsi storeDigit
 const storeDigit = (digit) => {
-  currentValue =
-    currentValue === "0" ? (currentValue = digit) : currentValue + digit;
+  if (isOperatorStore) {
+    currentValue = digit;
+    isOperatorStore = false;
+  }
+
+  currentValue = currentValue === "0" ? digit : currentValue + digit;
   allContent = allContent === null ? (allContent = digit) : allContent + digit;
 };
 
@@ -63,6 +67,8 @@ const storeOperator = (nextOperator) => {
     operator = nextOperator;
     allContent = currentValue + nextOperator;
     currentValue = "0";
+  } else {
+    calculate(operator);
   }
 };
 
@@ -79,10 +85,6 @@ const resetCalculator = () => {
 const calculate = (value) => {
   const secondOperand = parseFloat(currentValue);
   allContent += value;
-
-  console.log("firstOperand: ", firstOperand);
-  console.log("operator: ", operator);
-  console.log("currentValue: ", currentValue);
 
   switch (operator) {
     case "+":
@@ -102,6 +104,11 @@ const calculate = (value) => {
   }
 };
 
+const removeValue = () => {
+  currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : "0";
+  allContent = allContent.length > 1 ? allContent.slice(0, -1) : "0";
+};
+
 // 11. buat event klik pada semua button, lalu buat kondisi value yg di klik apa dan dimasukkan ke fungsi yg sesuai dengan valuenya
 buttons.forEach((button) =>
   button.addEventListener("click", () => {
@@ -112,12 +119,15 @@ buttons.forEach((button) =>
     } else if (value === "RESET") {
       resetCalculator();
     } else if (value === "=") {
+      if (currentValue === "0" || (firstOperand === null && operator === null))
+        return;
       calculate(value);
+    } else if (value === "DEL") {
+      if (currentValue === "0" || currentValue.length === 0) return;
+      removeValue();
     } else {
       storeOperator(value);
     }
-
-    // console.log("update display setelah ini");
     updateDisplay();
   })
 );
